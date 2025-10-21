@@ -13,7 +13,7 @@ public class Cards {
     static String[] rank = {"2", "3", "4", "5", "6", "7", "8", "9", "10", 
         "jack", "queen", "king", "ace"};
 
-    private int suitsInx;
+    // private int suitsInx;
     private int rankInx;
   
 
@@ -22,7 +22,7 @@ public class Cards {
      * @param deckInx The index of the card in the deck.
      */
     public void run(int deckInx) {
-        suitsInx = getSuitsInx(deckInx); 
+        // suitsInx = getSuitsInx(deckInx); 
         rankInx = getRankInx(deckInx);
         System.out.println(rankInx);
         // System.out.println(rank[rankInx] + " of " + suits[suitsInx]);
@@ -74,13 +74,6 @@ public class Cards {
         boolean flush = false;
         boolean straight = true;
 
-        
-        table.clear();
-        table.add(8);
-        table.add(9);
-        table.add(10);
-        table.add(11);
-        table.add(12);
         while (counter < 2) {
             value += getRankInx(hand.get(counter)) + 1;
             counter++;
@@ -143,23 +136,28 @@ public class Cards {
         } else if (pair.size() >= 2) {
             value += 20;
         }
+        // System.out.println("value after pairs: " + value);
         // Check for three of a kind
         if (threeOfAKind) {
             value += 30;
         }
+        // System.out.println("value after three of a kind: " + value);
         // Check for full house
         if (pairs && threeOfAKind) {
             value += 60;
         }
+        // System.out.println("value after full house: " + value);
+        // Check for four of a kind
         if (fourOfAKind) {
             value += 70;
         }
+        // System.out.println("value after four of a kind: " + value);
         // Check for flush
         if (checkForFlush(sortDeckInx)) {
             value += 50;
             flush = true;
         }
-        System.out.println("value after flush: " + value);
+        // System.out.println("value after flush: " + value);
 
         System.out.println(removeDup(sort));
 
@@ -168,13 +166,13 @@ public class Cards {
             value += 40;
             straight = true;
         }
-        System.out.println("value after straight: " + value);
+        // System.out.println("value after straight: " + value);
         
         // Check for straight flush
         if  (straight && flush) {
             value += 80;
         }
-        System.out.println("value after straight flush: " + value);
+        // System.out.println("value after straight flush: " + value);
 
         // Check for royal flush
         if (straight && flush && removeDup(sort).contains(12) && removeDup(sort).contains(11)) {
@@ -196,7 +194,6 @@ public class Cards {
         }
         return false;
     }
-
 
     private boolean checkForStraight(int[] cards) {
         
@@ -242,19 +239,19 @@ public class Cards {
         return noDup;
     }
 
-    private Set<Integer> allDup(Collection<Integer> cards) {
-        Map<Integer, Integer> rankCount = new HashMap<>();
-        Set<Integer> duplicates = new HashSet<>();
+    // private Set<Integer> allDup(Collection<Integer> cards) {
+    //     Map<Integer, Integer> rankCount = new HashMap<>();
+    //     Set<Integer> duplicates = new HashSet<>();
 
-        for (int card : cards) {
-            int rank = getRankInx(card);
-            rankCount.put(rank, rankCount.getOrDefault(rank, 0) + 1);
-            if (rankCount.get(rank) == 2) { 
-                duplicates.add(rank);
-            }
-        }
-        return duplicates;
-    }
+    //     for (int card : cards) {
+    //         int rank = getRankInx(card);
+    //         rankCount.put(rank, rankCount.getOrDefault(rank, 0) + 1);
+    //         if (rankCount.get(rank) == 2) { 
+    //             duplicates.add(rank);
+    //         }
+    //     }
+    //     return duplicates;
+    // }
 
     /**
      * Sorts an array of card indices based on their rank.
@@ -284,12 +281,12 @@ public class Cards {
      */
     public String toImage(int deckInx) {
         String image;
-        getRankInx(deckInx);
-        getSuitsInx(deckInx);
-        if (rankInx < 10) {
-            image = rank[rankInx] + "_of_" + suits[suitsInx] + ".png";
+        int rankInx = getRankInx(deckInx);
+        int suitsInx = getSuitsInx(deckInx);
+        if (rankInx > 8 && rankInx < 12) {
+            image = "./playing_cards/" + rank[rankInx] + "_of_" + suits[suitsInx] + "2.png";
         } else {
-            image = rank[rankInx] + "_of_" + suits[suitsInx] + "2.png";
+            image = "./playing_cards/" + rank[rankInx] + "_of_" + suits[suitsInx] + ".png";
         }
         return image;
     }
