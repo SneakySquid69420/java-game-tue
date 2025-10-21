@@ -12,6 +12,10 @@ import javax.swing.event.ChangeEvent;
  * The Swing GUI for the poker game.
  */
 public class JavaSwing {
+        Client client = new Client();
+        public JavaSwing(Client client) {
+            this.client = client;
+        }
     JavaGame game = new JavaGame();
     Cards cards = new Cards();
     Actions actions = new Actions();

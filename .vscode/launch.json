@@ -6,6 +6,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Server",
+            "request": "launch",
+            "mainClass": "Server",
+            "projectName": "java-game-tue_43d9d9f3"
+        },
+        {
+            "type": "java",
+            "name": "Client",
+            "request": "launch",
+            "mainClass": "Client",
+            "projectName": "java-game-tue_43d9d9f3"
+        },
+        {
+            "type": "java",
+            "name": "Server",
+            "request": "launch",
+            "mainClass": "Server",
+            "projectName": "java-game-tue_3464444f"
+        },
+        {
+            "type": "java",
             "name": "Start",
             "request": "launch",
             "mainClass": "Start",
