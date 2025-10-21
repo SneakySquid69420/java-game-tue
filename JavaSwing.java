@@ -14,6 +14,10 @@ import javax.swing.event.ChangeEvent;
  * The Swing GUI for the poker game.
  */
 public class JavaSwing {
+        Client client = new Client();
+        public JavaSwing(Client client) {
+            this.client = client;
+        }
     JavaGame game = new JavaGame();
     Cards cards = new Cards();
     Actions actions = new Actions();
@@ -209,12 +213,11 @@ public class JavaSwing {
             frame.add(raise);
             frame.add(fold);
 
-            check.addActionListener(new ActionListener() {
-                @Override 
-                public void actionPerformed(ActionEvent e) {
-                    actions.check();
-                }
-            });
+            check.addActionListener(e -> client.sendMessage("CHECK"));
+call.addActionListener(e -> client.sendMessage("CALL"));
+raise.addActionListener(e -> client.sendMessage("RAISE " + slider.getValue()));
+fold.addActionListener(e -> client.sendMessage("FOLD"));
+
             JLabel moneyLabel = new JLabel("your money: €" + Integer.toString(playerMoney));
             moneyLabel.setFont(new Font("Arial", Font.PLAIN, 30));
             frame.add(moneyLabel);
