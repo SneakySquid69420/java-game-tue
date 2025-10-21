@@ -12,12 +12,12 @@ public class JavaGame {
 
     Random randomGenerator;
     Cards cards = new Cards();
-    public List<Integer> hand = new ArrayList<>();
+    public List<Integer> allCards = new ArrayList<>();
 
     /**
      * The main game loop.
      */
-    void runSinglePlayer() {
+    public void runSinglePlayer() {
         randomGenerator = new Random();
         List<Integer> usedCards = new ArrayList<>();
         int cardsLeft = 52 - usedCards.size();
@@ -43,9 +43,8 @@ public class JavaGame {
                 random = randomGenerator.nextInt(cardsLeft);
             }
         }
-        hand.add(usedCards.get(0));
-        hand.add(usedCards.get(1));
-        System.out.println(hand);
+        
+ 
         // Set all pairs of hands in a list
         for (int i = 0; i < usedCards.size(); i += 2) {
             int first = usedCards.get(i);
@@ -68,6 +67,10 @@ public class JavaGame {
                 random = randomGenerator.nextInt(cardsLeft);
             }
         }
+        for (int i : usedCards) {
+            allCards.add(i);
+        }
+        
         // System.out.println(tableCards);
         for (int i : tableCards) {
             System.out.println("table:");
