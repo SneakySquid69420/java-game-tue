@@ -1,18 +1,25 @@
 public class Actions {
-    public void nextPlayer() {
+    JavaSwing swing = new JavaSwing();
+
+    public void call() {
 
     }
+
     public void check() {
 
     }
-    public void raise(int preRaise, int raise) {
-        boolean ableToRaise = false;
-        if (preRaise < raise) {
-            ableToRaise = true;
-        }
+
+    public void raise(int raise) {
+        swing.playerMoney -= raise;
+        swing.potMoney += raise;
+        
+    }
+
+    public void fold() {
 
     }
-    public void fold() {
+
+    public void nextTurn() {
 
     }
 }

@@ -8,8 +8,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 
-
-
 /**
  * The Swing GUI for the poker game.
  */
@@ -18,6 +16,9 @@ public class JavaSwing {
     Cards cards = new Cards();
     Actions actions = new Actions();
     public int round = 3;
+    public int potMoney = 20;
+    public int playerMoney = 5000;
+    public int opponentMoney = 5000;
 
     /**
      * Runs the GUI with the given hand of cards.
@@ -41,9 +42,7 @@ public class JavaSwing {
         BufferedImage combinedImage3;
         BufferedImage combinedImage4;
         BufferedImage image8;
-        int playerMoney = 5000;
-        int opponentMoney = 5000;
-        int potMoney = 500;
+        
         try {
             image1 = ImageIO.read(getClass().getClassLoader().getResource(cards.toImage(
                 hand.get(0))));
@@ -213,6 +212,28 @@ public class JavaSwing {
                 @Override 
                 public void actionPerformed(ActionEvent e) {
                     actions.check();
+                    actions.nextTurn();
+                }
+            });
+            call.addActionListener(new ActionListener() {
+                @Override 
+                public void actionPerformed(ActionEvent e) {
+                    actions.call();
+                    actions.nextTurn();
+                }
+            });
+            raise.addActionListener(new ActionListener() {
+                @Override 
+                public void actionPerformed(ActionEvent e) {
+                    actions.raise(slider.getValue());
+                    actions.nextTurn();
+                }
+            });
+            fold.addActionListener(new ActionListener() {
+                @Override 
+                public void actionPerformed(ActionEvent e) {
+                    actions.fold();
+                    actions.nextTurn();
                 }
             });
             JLabel moneyLabel = new JLabel("your money: €" + Integer.toString(playerMoney));
