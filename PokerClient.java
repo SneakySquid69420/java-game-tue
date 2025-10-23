@@ -3,7 +3,7 @@ import java.net.*;
 
 public class PokerClient {
     public static void main(String[] args) throws Exception {
-        Socket socket = new Socket("localhost", 12345);
+        Socket socket = new Socket("172.16.0.107", 12345);
         ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 

@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,21 +13,22 @@ import javax.swing.event.ChangeEvent;
  * The Swing GUI for the poker game.
  */
 public class JavaSwing {
-    private Client client;
     private Actions actions;
     private boolean buttonsEnabled = true;
-    
-    public JavaSwing(Client client) {
-        this.client = client;   
-    }
 
+    /**
+     * Sets the Actions instance for the GUI.
+     * @param actions The Actions instance.
+     */
     public void setActions(Actions actions) {
         this.actions = actions;
     }
 
+    /**
+     * Disables action buttons in the GUI.
+     */
     public void disableActions() {
-        
-        System.out.println("Disabling action buttons.");
+        buttonsEnabled = false;
     }
 
     JavaGame game = new JavaGame();
@@ -36,15 +38,25 @@ public class JavaSwing {
     public int playerMoney = 5000;
     public int opponentMoney = 5000;
     private JLabel statusLabel = new JLabel("Game has started");
+    private JFrame frame;
+    public boolean playerFolded = false;
+    public boolean botFolded = false;
+    public boolean botChecked = false;
+    public boolean botRaised = false;
+    private boolean firstRound = true;
+    private boolean playerRaised = false;
 
     /**
      * Runs the GUI with the given hand of cards.
      * @param hand The list of card indices representing the player's hand and table cards.
      */
     public void run(List<Integer> hand) {
-        System.out.println("hand received: " + hand + " size: " + hand.size());
 
-        JFrame frame = new JFrame("cards");
+        if (frame != null) {
+            frame.dispose();
+        }
+
+        frame = new JFrame("cards");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new GridLayout(5, 5, 10, 10));
         BufferedImage image1;
@@ -136,6 +148,52 @@ public class JavaSwing {
                 frame.add(new JLabel(Integer.toString(i)));
             }
 
+            JButton check = new JButton("Check");
+            JButton call = new JButton("Call");
+            JButton raise = new JButton("Raise");
+            JButton fold = new JButton("Fold");
+            
+            List<Integer> player = new ArrayList<>(hand);
+            player.remove(2);
+            player.remove(2);
+            List<Integer> bot = new ArrayList<>(hand);
+            bot.remove(0);
+            bot.remove(0);
+            if (!buttonsEnabled) {
+                check.setEnabled(false);
+                call.setEnabled(false);
+                raise.setEnabled(false);
+                fold.setEnabled(false);
+                int playerValue = actions.getValue(player);
+                int botValue = actions.getValue(bot);
+                if ((playerValue > botValue && !playerFolded) || botFolded) {
+                    winMessage("the player");
+                    playerMoney += potMoney;
+                    potMoney = 0;
+                } else if (playerValue == botValue && !playerFolded && !botFolded) {
+                    winMessage("noone");
+                    playerMoney = 5010;
+                    opponentMoney = 5010;
+                    potMoney = 0;
+                } else if ((botValue > playerValue && !botFolded) || playerFolded) {
+                    winMessage("the bot");
+                    opponentMoney += potMoney;
+                    potMoney = 0;
+                }
+            } else if (playerMoney == 0) {
+                raise.setEnabled(false);
+            }
+
+            actions.updateBotRaised();
+            if (botChecked || firstRound || (actions.playerCalled && !actions.botRaised)
+                || playerRaised) {
+                firstRound = false;
+                playerRaised = false;
+                call.setEnabled(false);
+            } else if (botRaised) {
+                check.setEnabled(false);
+            }
+
             JLabel opponentCards = new JLabel();
             frame.add(opponentCards);
             opponentCards.setIcon(new ImageIcon(scaled8));
@@ -154,7 +212,7 @@ public class JavaSwing {
             pot.setFont(new Font("Arial", Font.PLAIN, 50));
             frame.add(pot);
             switch (round) {
-                case 0 -> {
+                default -> {
                     JLabel filler = new JLabel();
                     frame.add(filler);
                 }
@@ -168,28 +226,12 @@ public class JavaSwing {
                     frame.add(river);
                     river.setIcon(new ImageIcon(combinedImage3));
                 }
-                case 3 -> {
+                case 3, 4 -> {
                     JLabel river = new JLabel();
                     frame.add(river);
                     river.setIcon(new ImageIcon(combinedImage4));
                 }
             }
-            // if (round == 1) {
-            //     JLabel river = new JLabel();
-            //     frame.add(river);
-            //     river.setIcon(new ImageIcon(combinedImage2));
-            // } else if (round == 2) {
-            //     JLabel river = new JLabel();
-            //     frame.add(river);
-            //     river.setIcon(new ImageIcon(combinedImage3));
-            // } else if (round == 3) {
-            //     JLabel river = new JLabel();
-            //     frame.add(river);
-            //     river.setIcon(new ImageIcon(combinedImage4));
-            // } else {
-            //     JLabel filler = new JLabel();
-            //     frame.add(filler);
-            // }
            
             frame.add(new JLabel("13"));
             frame.add(statusLabel);
@@ -204,12 +246,6 @@ public class JavaSwing {
             frame.add(label);
             label.setIcon(new ImageIcon(combinedImage));
 
-            //for(int i = 18; i < 19; i++){
-            // JLabel filler3 = new JLabel();
-            // frame.add(filler3);
-            // frame.add(new JLabel(Integer.toString(i)));
-            //}
-
             JLabel sliderFrame = new JLabel();
             frame.add(sliderFrame);
 
@@ -223,7 +259,7 @@ public class JavaSwing {
             } else if (playerMoney < 1000) {
                 slider.setMajorTickSpacing(200);
                 slider.setMinorTickSpacing(50);
-            } else if (playerMoney < 5000) {
+            } else if (playerMoney < 4000) {
                 slider.setMajorTickSpacing(500);
                 slider.setMinorTickSpacing(100);
             } else {
@@ -239,24 +275,6 @@ public class JavaSwing {
                     sliderFrame.setText("your bet = " + value);
                 }
             });
-
-            JButton check = new JButton("Check");
-            JButton call = new JButton("Call");
-            JButton raise = new JButton("Raise");
-            JButton fold = new JButton("Fold");
-            
-
-            if (!buttonsEnabled) {
-                check.setEnabled(false);
-                call.setEnabled(false);
-                raise.setEnabled(false);
-                fold.setEnabled(false);
-            } else {
-                check.setEnabled(true);
-                call.setEnabled(true);
-                raise.setEnabled(true);
-                fold.setEnabled(true);
-            }
 
             frame.add(check);
             frame.add(call);
@@ -280,8 +298,9 @@ public class JavaSwing {
             raise.addActionListener(new ActionListener() {
                 @Override 
                 public void actionPerformed(ActionEvent e) {
+                    playerRaised = true;
                     actions.raise(slider.getValue());
-                    actions.nextTurn();
+                    // actions.nextTurn();
                 }
             });
             fold.addActionListener(new ActionListener() {
@@ -302,11 +321,15 @@ public class JavaSwing {
         frame.setVisible(true);
     }
 
+    private void winMessage(String winner) {
+        if (!winner.equals("noone")) {
+            setStatusText("The winner is: " + winner);
+        } else {
+            setStatusText("It's a draw");
+        }
+    }
+
     public void setStatusText(String text) {
         statusLabel.setText(text);
     }
-
-    // public static void main(String[] args) {
-    //     new JavaSwing().run();
-    // }
 }

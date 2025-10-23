@@ -62,6 +62,12 @@ public class Cards {
         return conflict;
     }
 
+    private int getPairValue(int index) {
+        int value;
+        value = getRankInx(index) + 1;
+        return value;
+    }
+
     /**
      * Calculates the value of a hand combined with table cards.
      * @param hand A list of two card indices representing the player's hand.
@@ -70,14 +76,11 @@ public class Cards {
      */
     public int getValue(List<Integer> hand, List<Integer> table) {
         int value = 0;
-        int counter = 0;
         boolean flush = false;
         boolean straight = true;
 
-        while (counter < 2) {
-            value += getRankInx(hand.get(counter)) + 1;
-            counter++;
-        }
+        value += getPairValue(hand.get(0));
+        value += getPairValue(hand.get(1));
         System.out.println("value after first: " + value);
 
         int[] sort = new int[hand.size() + table.size()];
@@ -122,48 +125,55 @@ public class Cards {
                 fourOfAKind = true;
             }
         }
+        int [] pairsCards = new int[pair.size()];
+        for (int i = 0; i < pair.size(); i++) {
+            pairsCards[i] = pair.get(i);
+        }
+
+        sortArray(pairsCards);
         // Check for pair and double pair
         if (pair.size() == 1) {
-            value += 100;
+            value = 100 + getPairValue(pairsCards[0]);
         } else if (pair.size() >= 2) {
-            value += 200;
+            value = 200 + getPairValue(pairsCards[pairsCards.length - 1]) 
+                + getPairValue(pairsCards[pairsCards.length - 2]);
         }
 
         // Check for three of a kind
         if (threeOfAKind) {
-            value += 300;
+            value = 300;
         }
 
         // Check for full house
         if (pairs && threeOfAKind) {
-            value += 600;
+            value = 600 + getPairValue(pairsCards[pairsCards.length - 1]);
         }
 
         // Check for four of a kind
         if (fourOfAKind) {
-            value += 700;
+            value = 700;
         }
 
         // Check for flush
         if (checkForFlush(sortDeckInx)) {
-            value += 500;
+            value = 500;
             flush = true;
         }
 
         // Check for straight
         if (checkForStraight(sort)) {
-            value += 400;
+            value = 400;
             straight = true;
         }
         
         // Check for straight flush
         if  (straight && flush) {
-            value += 800;
+            value = 800;
         }
 
         // Check for royal flush
         if (straight && flush && removeDup(sort).contains(12) && removeDup(sort).contains(11)) {
-            value += 1000; 
+            value = 1000; 
         }
         System.out.println("value after royal flush: " + value);
         return value;
@@ -182,6 +192,11 @@ public class Cards {
         return false;
     }
 
+    /**
+     * Checks if the given cards form a straight.
+     * @param cards An array of card rank indices.
+     * @return true if the cards form a straight, false otherwise.
+     */
     private boolean checkForStraight(int[] cards) {
         
         List<Integer> noDup = removeDup(cards);
@@ -225,20 +240,6 @@ public class Cards {
         }
         return noDup;
     }
-
-    // private Set<Integer> allDup(Collection<Integer> cards) {
-    //     Map<Integer, Integer> rankCount = new HashMap<>();
-    //     Set<Integer> duplicates = new HashSet<>();
-
-    //     for (int card : cards) {
-    //         int rank = getRankInx(card);
-    //         rankCount.put(rank, rankCount.getOrDefault(rank, 0) + 1);
-    //         if (rankCount.get(rank) == 2) { 
-    //             duplicates.add(rank);
-    //         }
-    //     }
-    //     return duplicates;
-    // }
 
     /**
      * Sorts an array of card indices based on their rank.
