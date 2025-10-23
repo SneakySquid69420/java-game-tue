@@ -24,7 +24,7 @@ public class Cards {
     public void run(int deckInx) {
         // suitsInx = getSuitsInx(deckInx); 
         rankInx = getRankInx(deckInx);
-        System.out.println(rankInx);
+        System.out.println(rankInx + 1);
         // System.out.println(rank[rankInx] + " of " + suits[suitsInx]);
     }
 
@@ -99,14 +99,6 @@ public class Cards {
 
         sortArray(sortDeckInx);
         sortArray(sort);
-        for (int i = 0; i < sort.length; i++) {
-            System.out.print(sort[i] + "(" + getRankInx(sort[i]) + ")");
-            if (i < 2) {
-                System.out.println(suits[getSuitsInx(hand.get(i))]);
-            } else {
-                System.out.println(suits[getSuitsInx(table.get(i - 2))]);
-            }
-        }
 
         List<Integer> sorted = new ArrayList<>();
         for (int i : sort) {
@@ -132,47 +124,42 @@ public class Cards {
         }
         // Check for pair and double pair
         if (pair.size() == 1) {
-            value += 10;
+            value += 100;
         } else if (pair.size() >= 2) {
-            value += 20;
+            value += 200;
         }
-        // System.out.println("value after pairs: " + value);
+
         // Check for three of a kind
         if (threeOfAKind) {
-            value += 30;
+            value += 300;
         }
-        // System.out.println("value after three of a kind: " + value);
+
         // Check for full house
         if (pairs && threeOfAKind) {
-            value += 60;
+            value += 600;
         }
-        // System.out.println("value after full house: " + value);
+
         // Check for four of a kind
         if (fourOfAKind) {
-            value += 70;
+            value += 700;
         }
-        // System.out.println("value after four of a kind: " + value);
+
         // Check for flush
         if (checkForFlush(sortDeckInx)) {
-            value += 50;
+            value += 500;
             flush = true;
         }
-        // System.out.println("value after flush: " + value);
-
-        System.out.println(removeDup(sort));
 
         // Check for straight
         if (checkForStraight(sort)) {
-            value += 40;
+            value += 400;
             straight = true;
         }
-        // System.out.println("value after straight: " + value);
         
         // Check for straight flush
         if  (straight && flush) {
-            value += 80;
+            value += 800;
         }
-        // System.out.println("value after straight flush: " + value);
 
         // Check for royal flush
         if (straight && flush && removeDup(sort).contains(12) && removeDup(sort).contains(11)) {

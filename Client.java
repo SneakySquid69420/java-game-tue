@@ -1,6 +1,9 @@
 import java.io.*;
-import java.net.*;
+import java.net.Socket;
 
+/**
+ * The client for the poker game.
+ */
 public class Client {
     public static void main(String[] args) throws IOException {
         Socket socket = new Socket("localhost", 1234);
@@ -8,7 +11,8 @@ public class Client {
 
         new Thread(() -> {
             try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(
+                    socket.getInputStream()));
                 String message;
                 while ((message = in.readLine()) != null) {
                     System.out.println("Server: " + message);
