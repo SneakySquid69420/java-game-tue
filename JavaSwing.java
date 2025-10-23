@@ -12,17 +12,30 @@ import javax.swing.event.ChangeEvent;
  * The Swing GUI for the poker game.
  */
 public class JavaSwing {
-        Client client = new Client();
-        public JavaSwing(Client client) {
-            this.client = client;
-        }
+    private Client client;
+    private Actions actions;
+    private boolean buttonsEnabled = true;
+    
+    public JavaSwing(Client client) {
+        this.client = client;   
+    }
+
+    public void setActions(Actions actions) {
+        this.actions = actions;
+    }
+
+    public void disableActions() {
+        
+        System.out.println("Disabling action buttons.");
+    }
+
     JavaGame game = new JavaGame();
     Cards cards = new Cards();
-    Actions actions = new Actions();
-    public int round = 3;
+    public int round = 0;
     public int potMoney = 20;
     public int playerMoney = 5000;
     public int opponentMoney = 5000;
+    private JLabel statusLabel = new JLabel("Game has started");
 
     /**
      * Runs the GUI with the given hand of cards.
@@ -46,6 +59,9 @@ public class JavaSwing {
         BufferedImage combinedImage3;
         BufferedImage combinedImage4;
         BufferedImage image8;
+
+        statusLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+        
         
         try {
             image1 = ImageIO.read(getClass().getClassLoader().getResource(cards.toImage(
@@ -137,24 +153,48 @@ public class JavaSwing {
             JLabel pot = new JLabel("pot: €" + Integer.toString(potMoney));
             pot.setFont(new Font("Arial", Font.PLAIN, 50));
             frame.add(pot);
-                
-            if (round == 1) {
-                JLabel river = new JLabel();
-                frame.add(river);
-                river.setIcon(new ImageIcon(combinedImage2));
-            } else if (round == 2) {
-                JLabel river = new JLabel();
-                frame.add(river);
-                river.setIcon(new ImageIcon(combinedImage3));
-            } else if (round == 3) {
-                JLabel river = new JLabel();
-                frame.add(river);
-                river.setIcon(new ImageIcon(combinedImage4));
-            } else {
-                JLabel filler = new JLabel();
-                frame.add(filler);
+            switch (round) {
+                case 0 -> {
+                    JLabel filler = new JLabel();
+                    frame.add(filler);
+                }
+                case 1 -> {
+                    JLabel river = new JLabel();
+                    frame.add(river);
+                    river.setIcon(new ImageIcon(combinedImage2));
+                }
+                case 2 -> {
+                    JLabel river = new JLabel();
+                    frame.add(river);
+                    river.setIcon(new ImageIcon(combinedImage3));
+                }
+                case 3 -> {
+                    JLabel river = new JLabel();
+                    frame.add(river);
+                    river.setIcon(new ImageIcon(combinedImage4));
+                }
             }
-            for (int i = 13; i < 17; i++) {
+            // if (round == 1) {
+            //     JLabel river = new JLabel();
+            //     frame.add(river);
+            //     river.setIcon(new ImageIcon(combinedImage2));
+            // } else if (round == 2) {
+            //     JLabel river = new JLabel();
+            //     frame.add(river);
+            //     river.setIcon(new ImageIcon(combinedImage3));
+            // } else if (round == 3) {
+            //     JLabel river = new JLabel();
+            //     frame.add(river);
+            //     river.setIcon(new ImageIcon(combinedImage4));
+            // } else {
+            //     JLabel filler = new JLabel();
+            //     frame.add(filler);
+            // }
+           
+            frame.add(new JLabel("13"));
+            frame.add(statusLabel);
+            
+            for (int i = 15; i < 17; i++) {
                 //JLabel filler2 = new JLabel();
                 //frame.add(filler2);
                 frame.add(new JLabel(Integer.toString(i)));
@@ -206,6 +246,17 @@ public class JavaSwing {
             JButton fold = new JButton("Fold");
             
 
+            if (!buttonsEnabled) {
+                check.setEnabled(false);
+                call.setEnabled(false);
+                raise.setEnabled(false);
+                fold.setEnabled(false);
+            } else {
+                check.setEnabled(true);
+                call.setEnabled(true);
+                raise.setEnabled(true);
+                fold.setEnabled(true);
+            }
 
             frame.add(check);
             frame.add(call);
@@ -251,6 +302,9 @@ public class JavaSwing {
         frame.setVisible(true);
     }
 
+    public void setStatusText(String text) {
+        statusLabel.setText(text);
+    }
 
     // public static void main(String[] args) {
     //     new JavaSwing().run();

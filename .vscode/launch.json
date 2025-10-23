@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "JavaGame",
+            "request": "launch",
+            "mainClass": "JavaGame",
+            "projectName": "java-game-tue_43d9d9f3"
+        },
+        {
+            "type": "java",
+            "name": "Start",
+            "request": "launch",
+            "mainClass": "Start",
+            "projectName": "java-game-tue_43d9d9f3"
+        },
+        {
+            "type": "java",
             "name": "Server",
             "request": "launch",
             "mainClass": "Server",

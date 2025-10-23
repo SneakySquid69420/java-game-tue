@@ -73,7 +73,7 @@ public class JavaGame {
         
         // System.out.println(tableCards);
         for (int i : tableCards) {
-            System.out.println("table:");
+            // System.out.println("table:");
             cards.run(i);
         }
 
