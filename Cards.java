@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.*;
 
 /**
@@ -272,9 +273,11 @@ public class Cards {
         int rankInx = getRankInx(deckInx);
         int suitsInx = getSuitsInx(deckInx);
         if (rankInx > 8 && rankInx < 12) {
-            image = "./playing_cards/" + rank[rankInx] + "_of_" + suits[suitsInx] + "2.png";
+            image = "." + File.separator + "playing_cards" + File.separator 
+                + rank[rankInx] + "_of_" + suits[suitsInx] + "2.png";
         } else {
-            image = "./playing_cards/" + rank[rankInx] + "_of_" + suits[suitsInx] + ".png";
+            image = "." + File.separator + "playing_cards" + File.separator 
+                + rank[rankInx] + "_of_" + suits[suitsInx] + ".png";
         }
         return image;
     }

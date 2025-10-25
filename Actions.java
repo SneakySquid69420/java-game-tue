@@ -28,6 +28,9 @@ public class Actions {
         this.turnManager = manager;
     }
 
+    /**
+     * Updates the botRaised flag based on the current raise in TurnManager.
+     */
     public void updateBotRaised() {
         if (turnManager.raise > 0) {
             botRaised = true;

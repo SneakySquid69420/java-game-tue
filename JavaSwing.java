@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +105,7 @@ public class JavaSwing {
             image7 = ImageIO.read(getClass().getClassLoader().getResource(cards.toImage(
                 hand.get(hand.size() - 5))));
             image8 = ImageIO.read(getClass().getClassLoader().getResource(
-                "playing_cards/Card-Back.png"));
+                "playing_cards" + File.separator + "Card-Back.png"));
 
             Image scaled3 = image3.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
             Image scaled4 = image4.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
@@ -143,26 +144,23 @@ public class JavaSwing {
             g4.dispose();
 
             for (int i = 0; i < 2; i++) {
-                //JLabel filler = new JLabel();
-                //frame.add(filler);
-                frame.add(new JLabel(Integer.toString(i)));
+                frame.add(new JLabel());
             }
 
             JButton check = new JButton("Check");
             JButton call = new JButton("Call");
             JButton raise = new JButton("Raise");
             JButton fold = new JButton("Fold");
-            
+            boolean playAgainButton = false;
             List<Integer> player = new ArrayList<>(hand);
             player.remove(2);
             player.remove(2);
             List<Integer> bot = new ArrayList<>(hand);
-            bot.remove(0);
-            bot.remove(0);
+            bot.removeFirst();
+            bot.removeFirst();
             if (!buttonsEnabled) {
                 check.setEnabled(false);
                 call.setEnabled(false);
-                raise.setEnabled(false);
                 fold.setEnabled(false);
                 int playerValue = actions.getValue(player);
                 int botValue = actions.getValue(bot);
@@ -172,15 +170,20 @@ public class JavaSwing {
                     potMoney = 0;
                 } else if (playerValue == botValue && !playerFolded && !botFolded) {
                     winMessage("noone");
-                    playerMoney = 5010;
-                    opponentMoney = 5010;
+                    playerMoney = potMoney / 2;
+                    opponentMoney = potMoney / 2;
                     potMoney = 0;
                 } else if ((botValue > playerValue && !botFolded) || playerFolded) {
                     winMessage("the bot");
                     opponentMoney += potMoney;
                     potMoney = 0;
                 }
-            } else if (playerMoney == 0) {
+                raise = new JButton("Play again");
+                playAgainButton = true;
+                
+            } 
+            
+            if (playerMoney == 0) {
                 raise.setEnabled(false);
             }
 
@@ -205,7 +208,7 @@ public class JavaSwing {
             for (int i = 4; i < 11; i++) {
                 //JLabel filler = new JLabel();
                 //frame.add(filler);
-                frame.add(new JLabel(Integer.toString(i)));
+                frame.add(new JLabel());
             }
 
             JLabel pot = new JLabel("pot: €" + Integer.toString(potMoney));
@@ -233,13 +236,13 @@ public class JavaSwing {
                 }
             }
            
-            frame.add(new JLabel("13"));
+            frame.add(new JLabel());
             frame.add(statusLabel);
             
             for (int i = 15; i < 17; i++) {
                 //JLabel filler2 = new JLabel();
                 //frame.add(filler2);
-                frame.add(new JLabel(Integer.toString(i)));
+                frame.add(new JLabel());
             }   
 
             JLabel label = new JLabel();
@@ -249,7 +252,9 @@ public class JavaSwing {
             JLabel sliderFrame = new JLabel();
             frame.add(sliderFrame);
 
-            JSlider slider = new JSlider(0, playerMoney);
+            JSlider slider;
+            slider = new JSlider(0, playerMoney);
+            
             slider.setPaintTrack(true);
             slider.setPaintTicks(true);
             slider.setPaintLabels(true);
@@ -263,8 +268,8 @@ public class JavaSwing {
                 slider.setMajorTickSpacing(500);
                 slider.setMinorTickSpacing(100);
             } else {
-                slider.setMajorTickSpacing(1000);
-                slider.setMinorTickSpacing(200);
+                slider.setMajorTickSpacing(1500);
+                slider.setMinorTickSpacing(300);
             }
             sliderFrame.setText("your bet = " + slider.getValue());
             frame.add(slider);
@@ -295,14 +300,37 @@ public class JavaSwing {
                     actions.nextTurn();
                 }
             });
-            raise.addActionListener(new ActionListener() {
-                @Override 
-                public void actionPerformed(ActionEvent e) {
-                    playerRaised = true;
-                    actions.raise(slider.getValue());
-                    // actions.nextTurn();
-                }
-            });
+            if (!playAgainButton) {
+                raise.addActionListener(new ActionListener() {
+                    @Override 
+                    public void actionPerformed(ActionEvent e) {
+                        playerRaised = true;
+                        actions.raise(slider.getValue());
+                        // actions.nextTurn();
+                    }
+                });
+            } else if (playAgainButton) {
+                raise.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (playerMoney > 0 && opponentMoney > 0) {
+                            frame.dispose();
+                            round = 0;
+                            setStatusText("The game started");
+                            buttonsEnabled = true;
+                            firstRound = true;
+                            potMoney = 20;
+                            startNewGame();
+                        } else {
+                            if (playerMoney <= 0) {
+                                setStatusText("You lost everything!");
+                            } else {
+                                setStatusText("You won!");
+                            }
+                        }
+                    }
+                });
+            }
             fold.addActionListener(new ActionListener() {
                 @Override 
                 public void actionPerformed(ActionEvent e) {
@@ -319,6 +347,16 @@ public class JavaSwing {
         }
         frame.setSize(1500, 900);
         frame.setVisible(true);
+    }
+
+    private void startNewGame() {
+        JavaGame game = new JavaGame();
+        Bot bot = new Bot(this);
+        Actions actions = new Actions(this, bot);
+
+        TurnManager manager = new TurnManager(game, this, bot, actions);
+        bot.setTurnManager(manager);
+        manager.startGame();
     }
 
     private void winMessage(String winner) {
