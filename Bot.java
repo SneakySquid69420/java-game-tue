@@ -52,7 +52,7 @@ public class Bot {
         }
         botValue = cards.getValue(hand, table);
         int money = swing.opponentMoney;
-        if (!first && random == 1) {
+        if (!first && random == 1 && turnManager.round != 4) {
             checked = false;
             randomRaise = 0;
             if (botValue < 100 && money >= 20) {

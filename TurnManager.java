@@ -1,5 +1,8 @@
 import java.util.*;
 
+/**
+ * Manages the turns and rounds of the poker game.
+ */
 public class TurnManager {
     private JavaGame game;
     private JavaSwing swing;
@@ -80,11 +83,12 @@ public class TurnManager {
             endOfRound();
             return;
         }
-        updateRaise();
+        
         boolean check = bot.checked;
 
         if (!playerTurn && !actions.playerCalled) {
             botTurn();
+            updateRaise();
             if (round < 3 && (raise == 0 || check)) {
                 round++;
                 swing.round = round;
