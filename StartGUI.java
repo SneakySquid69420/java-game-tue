@@ -1,47 +1,56 @@
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+import java.awt.*;
 
 public class StartGUI {
-
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(StartGUI::createAndShowGUI);
-    }
-
-    private static void createAndShowGUI() {
         JFrame frame = new JFrame("Poker Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+        frame.setSize(400, 250);
         frame.setLayout(new GridLayout(3, 1, 10, 10));
 
         JLabel title = new JLabel("Select Game Mode", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 24));
         frame.add(title);
 
-        JButton singlePlayerButton = new JButton("Single Player");
-        JButton multiplayerButton = new JButton("Multiplayer");
+        JButton singlePlayer = new JButton("Single Player");
+        JButton onlineMultiplayer = new JButton("Online Multiplayer");
 
-        frame.add(singlePlayerButton);
-        frame.add(multiplayerButton);
+        frame.add(singlePlayer);
+        frame.add(onlineMultiplayer);
 
-        singlePlayerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                Start.runSinglePlayer();
-            }
+        // Single Player Action
+        singlePlayer.addActionListener(e -> {
+            frame.dispose();
+            runSinglePlayer();
         });
 
-        multiplayerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                Start.runMultiplayer();
-            }
+        // Online Multiplayer Action
+        onlineMultiplayer.addActionListener(e -> {
+            frame.dispose();
+            runOnlineMultiplayer();
         });
 
-        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    private static void runSinglePlayer() {
+        JavaGame game = new JavaGame();
+        JavaSwing swing = new JavaSwing(null); // single-player, no client
+        Bot bot = new Bot(swing);
+        Actions actions = new Actions(null, swing, bot);
+        TurnManager manager = new TurnManager(game, swing, bot, actions);
+        bot.setTurnManager(manager);
+        manager.startGame(); // properly starts the game
+    }
+
+    private static void runOnlineMultiplayer() {
+        try {
+            JavaSwing swing = new JavaSwing(null);
+            MultiplayerClientGUI clientGUI = new MultiplayerClientGUI(swing);
+            clientGUI.startClient(); // fetches IP automatically and connects
+            JOptionPane.showMessageDialog(null, "Connected to server. Wait for your turn.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

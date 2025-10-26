@@ -1,43 +1,61 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Bot {
     private Cards cards = new Cards();
     private JavaSwing swing;
-    private int botValue;
     private TurnManager turnManager;
+    private int botValue;
+    private boolean first = true;
 
-    public Bot(JavaSwing swing) { this.swing = swing; }
+    public Bot(JavaSwing swing) {
+        this.swing = swing;
+    }
 
-    public void setTurnManager(TurnManager manager) { this.turnManager = manager; }
+    public void setTurnManager(TurnManager manager) {
+        this.turnManager = manager;
+    }
 
-    public void action(List<Integer> hand) {
-        List<Integer> botHand = new ArrayList<>();
+    public void action(List<Integer> botHand) {
+        if (turnManager.folded) return;
+
+        List<Integer> hand = new ArrayList<>();
         List<Integer> table = new ArrayList<>();
-        botHand.add(hand.get(2));
-        botHand.add(hand.get(3));
-        for (int i = 4; i < hand.size(); i++) table.add(hand.get(i));
+        hand.add(botHand.get(2));
+        hand.add(botHand.get(3));
 
-        botValue = cards.getValue(botHand, table);
+        for (int i = 4; i < botHand.size(); i++) {
+            table.add(botHand.get(i));
+        }
 
-        if (botValue < 100) swing.setStatusText("Bot checks");
-        else {
-            int raise = Math.min(botValue / 10, swing.opponentMoney);
-            swing.opponentMoney -= raise;
-            swing.potMoney += raise;
-            swing.setStatusText("Bot raised: €" + raise);
+        botValue = cards.getValue(hand, table);
+        int money = swing.opponentMoney;
+
+        if (first) {
+            first = false;
+            swing.setStatusText("Game started!");
+        } else if (botValue < 100 && money >= 20) {
+            swing.opponentMoney -= 20;
+            swing.potMoney += 20;
+            swing.setStatusText("Bot raised €20");
+        } else if (botValue < 250 && money >= 40) {
+            swing.opponentMoney -= 40;
+            swing.potMoney += 40;
+            swing.setStatusText("Bot raised €40");
+        } else if (botValue < 500 && money >= 60) {
+            swing.opponentMoney -= 60;
+            swing.potMoney += 60;
+            swing.setStatusText("Bot raised €60");
+        } else if (botValue >= 500 && money >= 80) {
+            swing.opponentMoney -= 80;
+            swing.potMoney += 80;
+            swing.setStatusText("Bot raised €80");
+        } else {
+            fold();
         }
     }
 
-    public void raise(int amount) {
-        if (swing.opponentMoney >= amount) {
-            swing.opponentMoney -= amount;
-            swing.potMoney += amount;
-        } else fold();
-    }
-
-    private void fold() {
+    public void fold() {
         swing.setStatusText("Bot folded!");
-        turnManager.playerFolded();
+        turnManager.botFolded();
     }
 }

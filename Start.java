@@ -1,24 +1,34 @@
+import java.util.Scanner;
+
 public class Start {
 
+    public static void main(String[] args) {
+        // Launch the GUI selection screen
+        javax.swing.SwingUtilities.invokeLater(StartGUI::new);
+    }
+
     public static void runSinglePlayer() {
-        JavaGame game = new JavaGame();           // creates the deck and deals cards
-        JavaSwing swing = new JavaSwing(null);     // GUI
-        Bot bot = new Bot(swing);                  // bot only needs GUI in single-player
-        Actions actions = new Actions(swing, bot); // no client needed
+        JavaGame game = new JavaGame();
+        JavaSwing swing = new JavaSwing(null); // single-player, no client
+        Bot bot = new Bot(swing);
+        Actions actions = new Actions(null, bot, swing);
         TurnManager manager = new TurnManager(game, swing, bot, actions);
         bot.setTurnManager(manager);
-
-        // Start the game (deals cards and calls bot first turn)
         manager.startGame();
     }
 
-    public static void runMultiplayer() {
+    public static void runMultiplayerLAN() {
         try {
             JavaSwing swing = new JavaSwing(null);
             MultiplayerClientGUI clientGUI = new MultiplayerClientGUI(swing);
-            clientGUI.startClient();
+            clientGUI.startClient(); // uses auto IP for local LAN
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void runOnlineMultiplayer() {
+        // Currently same as LAN (auto IP detection)
+        runMultiplayerLAN();
     }
 }

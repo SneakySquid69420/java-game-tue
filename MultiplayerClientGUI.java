@@ -1,6 +1,7 @@
 import javax.swing.*;
-import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class MultiplayerClientGUI {
     private JavaSwing swing;
@@ -10,29 +11,49 @@ public class MultiplayerClientGUI {
         this.swing = swing;
     }
 
-    public void startClient() throws Exception {
-        String serverIP = InetAddress.getLocalHost().getHostAddress();
-        int port = 12345;
-        client = new PokerClient(serverIP, port);
+    public void startClient() {
+        try {
+            // Automatically fetch local IP
+            String serverIP = getServerIP();
+            int port = 12345; // default port
 
-        new Thread(() -> {
-            try {
-                Object obj;
-                while ((obj = client.getInput().readObject()) != null) {
-                    if (obj instanceof Message msg) {
-                        switch(msg.type) {
-                            case CHAT -> swing.setStatusText(msg.data.toString());
-                            case STATE -> {
-                                GameState state = (GameState) msg.data;
-                                // Update GUI with table cards and pot
-                                swing.setStatusText("Current player: " + state.currentPlayer + " | Pot: €" + state.pot);
+            client = new PokerClient(serverIP, "Player");
+
+            new Thread(() -> {
+                try {
+                    Object obj;
+                    while ((obj = client.getInput().readObject()) != null) {
+                        if (obj instanceof Message msg) {
+                            switch (msg.type) {
+                                case CHAT -> swing.setStatusText(msg.data.toString());
+                                case STATE -> {
+                                    GameState state = (GameState) msg.data;
+                                    swing.potMoney = state.pot;
+                                    swing.run(state.tableCards); // show table cards
+                                }
+                                case RESULT -> swing.setStatusText(msg.data.toString());
                             }
-                            case RESULT -> swing.setStatusText(msg.data.toString());
                         }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) { e.printStackTrace(); }
-        }).start();
+            }).start();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getServerIP() {
+        try {
+            // Attempts to detect local IP automatically
+            InetAddress localHost = InetAddress.getLocalHost();
+            return localHost.getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return "127.0.0.1"; // fallback to localhost
+        }
     }
 
     public void sendAction(MultiplayerAction.ActionType type, int amount) {
