@@ -52,42 +52,42 @@ public class Bot {
         }
         botValue = cards.getValue(hand, table);
         int money = swing.opponentMoney;
+        randomRaise = 0;
         if (!first && random == 1 && turnManager.round != 4) {
             checked = false;
-            randomRaise = 0;
-            if (botValue < 100 && money >= 20) {
-                randomRaise = 20;
-                swing.botRaised = true;
-                swing.opponentMoney -= 20;
-                swing.potMoney += 20;
-                swing.setStatusText("The bot raised by €20");
-            } else if (botValue < 250 && money >= 40) {
-                randomRaise = 40;
-                swing.botRaised = true;
-                swing.opponentMoney -= 40;
-                swing.potMoney += 40;
-                swing.setStatusText("The bot raised by €40");
-            } else if (botValue < 500 && money >= 60) {
-                randomRaise = 60;
-                swing.botRaised = true;
-                swing.opponentMoney -= 60;
-                swing.potMoney += 60;
-                swing.setStatusText("The bot raised by €60");
-            } else if (botValue > 499 && money >= 80) {
-                randomRaise = 80;
-                swing.botRaised = true;
-                swing.opponentMoney -= 80;
-                swing.potMoney += 80;
-                swing.setStatusText("The bot raised by €80");
-            } else {
-                turnManager.botFolded();
+            if (swing.playerMoney != 0) {
+                if (botValue < 100 && money >= 20) {
+                    randomRaise = 20;
+                    swing.botRaised = true;
+                    swing.opponentMoney -= 20;
+                    swing.potMoney += 20;
+                    swing.setStatusText("The bot raised by €20");
+                } else if (botValue < 250 && money >= 40) {
+                    randomRaise = 40;
+                    swing.botRaised = true;
+                    swing.opponentMoney -= 40;
+                    swing.potMoney += 40;
+                    swing.setStatusText("The bot raised by €40");
+                } else if (botValue < 500 && money >= 60) {
+                    randomRaise = 60;
+                    swing.botRaised = true;
+                    swing.opponentMoney -= 60;
+                    swing.potMoney += 60;
+                    swing.setStatusText("The bot raised by €60");
+                } else if (botValue > 499 && money >= 80) {
+                    randomRaise = 80;
+                    swing.botRaised = true;
+                    swing.opponentMoney -= 80;
+                    swing.potMoney += 80;
+                    swing.setStatusText("The bot raised by €80");
+                } else {
+                    turnManager.botFolded();
+                }
             }
         } else if (first) {
-            randomRaise = 0;
             first = false;
             swing.setStatusText("The game started");
         } else if (random == 0) {
-            randomRaise = 0;
             checked = true;
             swing.setStatusText("The bot checked");
             swing.botChecked = true;

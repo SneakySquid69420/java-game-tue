@@ -71,7 +71,9 @@ public class JavaSwing {
         BufferedImage image7;
         BufferedImage combinedImage3;
         BufferedImage combinedImage4;
+        BufferedImage combinedImage5;
         BufferedImage image8;
+        BufferedImage image9 = null;
 
         statusLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         
@@ -104,15 +106,19 @@ public class JavaSwing {
                 hand.get(hand.size() - 4))));
             image7 = ImageIO.read(getClass().getClassLoader().getResource(cards.toImage(
                 hand.get(hand.size() - 5))));
-            image8 = ImageIO.read(getClass().getClassLoader().getResource(
-                "playing_cards" + File.separator + "Card-Back.png"));
+            if (round <= 3) {
+                image8 = ImageIO.read(getClass().getClassLoader().getResource(
+                    "playing_cards" + File.separator + "Card-Back.png"));
+            } else {
+                image8 = ImageIO.read(getClass().getClassLoader().getResource(
+                    cards.toImage(hand.get(2))));
+                image9 =  ImageIO.read(getClass().getClassLoader().getResource(
+                    cards.toImage(hand.get(3))));
+            }
 
             Image scaled3 = image3.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
             Image scaled4 = image4.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
             Image scaled5 = image5.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
-            Image scaled6 = image6.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
-            Image scaled7 = image7.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
-            Image scaled8 = image8.getScaledInstance(200, 150, Image.SCALE_SMOOTH);
 
             combinedImage2 = new BufferedImage(150, 75, BufferedImage.TYPE_INT_ARGB);
             combinedImage3 = new BufferedImage(200, 75, BufferedImage.TYPE_INT_ARGB);
@@ -128,12 +134,17 @@ public class JavaSwing {
 
             g2.dispose();
 
+            Image scaled6 = image6.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
+
             g3.drawImage(scaled3, 0, 0, null);
             g3.drawImage(scaled4, 50, 0, null);
             g3.drawImage(scaled5, 100, 0, null);
             g3.drawImage(scaled6, 150, 0, null);
 
             g3.dispose();
+
+            Image scaled7 = image7.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
+            
 
             g4.drawImage(scaled3, 0, 0, null);
             g4.drawImage(scaled4, 50, 0, null);
@@ -197,10 +208,24 @@ public class JavaSwing {
                 check.setEnabled(false);
             }
 
+            Image scaled8;
+            Image scaled9;
+
             JLabel opponentCards = new JLabel();
             frame.add(opponentCards);
-            opponentCards.setIcon(new ImageIcon(scaled8));
-
+            if (image9 == null) {
+                scaled8 = image8.getScaledInstance(200, 150, Image.SCALE_SMOOTH);
+                opponentCards.setIcon(new ImageIcon(scaled8));
+            } else {
+                scaled8 = image8.getScaledInstance(100, 150, Image.SCALE_SMOOTH);
+                scaled9 = image9.getScaledInstance(100, 150, Image.SCALE_SMOOTH);
+                combinedImage5 = new BufferedImage(200, 150, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D graphics2dOpponent = combinedImage5.createGraphics();
+                graphics2dOpponent.drawImage(scaled8, 0, 0, null);
+                graphics2dOpponent.drawImage(scaled9, 100, 0, null);
+                graphics2dOpponent.dispose();
+                opponentCards.setIcon(new ImageIcon(combinedImage5));
+            }
             JLabel theirMoney = new JLabel("their money: €" + Integer.toString(opponentMoney));
             theirMoney.setFont(new Font("Arial", Font.PLAIN, 30));
             frame.add(theirMoney);

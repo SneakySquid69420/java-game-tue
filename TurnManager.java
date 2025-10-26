@@ -68,6 +68,8 @@ public class TurnManager {
      */
     public void playerDidAction() {
         if (folded) {
+            swing.round = 4;
+            round = 4;
             return; // no further actions if folded
         }
         playerTurn = false;
