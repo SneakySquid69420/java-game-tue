@@ -1,56 +1,24 @@
-import java.util.*;
-
-/**
- * The starting point of the poker game.
- */
 public class Start {
 
-    JavaGame game = new JavaGame();
-    Client client = new Client();
-    JavaSwing swing = new JavaSwing(client);
-    Bot bot = new Bot(swing);
-    Actions actions = new Actions(client, swing, bot);
-
-    // private void run() { DIT IS VOOR MULTIPLAYER
-    //     swing.setActions(actions);
-    //     Thread serverThread = new Thread(() -> {
-    //         try {
-    //             Server.main(new String[]{});
-    //         } catch (Exception e) {
-    //             e.printStackTrace();
-    //         }
-    //     }); 
-    //     serverThread.start();
-    //     try {
-    //         Thread.sleep(200);
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    //     Thread clientThread = new Thread(() -> {
-    //         try {
-    //             client.main(new String[]{});
-    //         } catch (Exception e) {
-    //             e.printStackTrace();
-    //         }
-    //     }); 
-    //     clientThread.start();
-        
-    //     game.runSinglePlayer();
-    //     List<Integer> hands = new ArrayList<>(game.allCards);
-    //     swing.run(hands);
-    //     bot.action(hands);
-       
-    // }
-
-    public static void main(String[] args) {
-        JavaGame game = new JavaGame();
-        Client client = new Client();
-        JavaSwing swing = new JavaSwing(client);
-        Bot bot = new Bot(swing);
-        Actions actions = new Actions(client, swing, bot);
-
+    public static void runSinglePlayer() {
+        JavaGame game = new JavaGame();           // creates the deck and deals cards
+        JavaSwing swing = new JavaSwing(null);     // GUI
+        Bot bot = new Bot(swing);                  // bot only needs GUI in single-player
+        Actions actions = new Actions(swing, bot); // no client needed
         TurnManager manager = new TurnManager(game, swing, bot, actions);
         bot.setTurnManager(manager);
+
+        // Start the game (deals cards and calls bot first turn)
         manager.startGame();
+    }
+
+    public static void runMultiplayer() {
+        try {
+            JavaSwing swing = new JavaSwing(null);
+            MultiplayerClientGUI clientGUI = new MultiplayerClientGUI(swing);
+            clientGUI.startClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

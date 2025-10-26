@@ -6,6 +6,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "StartGUI",
+            "request": "launch",
+            "mainClass": "StartGUI",
+            "projectName": "java-game-tue_3464444f"
+        },
+        {
+            "type": "java",
+            "name": "PokerClient",
+            "request": "launch",
+            "mainClass": "PokerClient",
+            "projectName": "java-game-tue_3464444f"
+        },
+        {
+            "type": "java",
+            "name": "PokerServer",
+            "request": "launch",
+            "mainClass": "PokerServer",
+            "projectName": "java-game-tue_3464444f"
+        },
+        {
+            "type": "java",
             "name": "JavaGame",
             "request": "launch",
             "mainClass": "JavaGame",

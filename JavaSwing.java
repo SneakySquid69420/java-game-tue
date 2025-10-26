@@ -1,312 +1,52 @@
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.List;
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 
-/**
- * The Swing GUI for the poker game.
- */
 public class JavaSwing {
-    private Client client;
-    private Actions actions;
-    private boolean buttonsEnabled = true;
-    
-    public JavaSwing(Client client) {
-        this.client = client;   
-    }
-
-    public void setActions(Actions actions) {
-        this.actions = actions;
-    }
-
-    public void disableActions() {
-        
-        System.out.println("Disabling action buttons.");
-    }
-
-    JavaGame game = new JavaGame();
-    Cards cards = new Cards();
-    public int round = 0;
     public int potMoney = 20;
     public int playerMoney = 5000;
     public int opponentMoney = 5000;
-    private JLabel statusLabel = new JLabel("Game has started");
+    private JLabel statusLabel = new JLabel("Game started");
+    private Actions actions;
 
-    /**
-     * Runs the GUI with the given hand of cards.
-     * @param hand The list of card indices representing the player's hand and table cards.
-     */
+    public JavaSwing(Object client) { }
+
+    public void setActions(Actions actions) { this.actions = actions; }
+
     public void run(List<Integer> hand) {
-        System.out.println("hand received: " + hand + " size: " + hand.size());
-
-        JFrame frame = new JFrame("cards");
+        JFrame frame = new JFrame("Poker");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new GridLayout(5, 5, 10, 10));
-        BufferedImage image1;
-        BufferedImage image2;
-        BufferedImage combinedImage;
-        BufferedImage combinedImage2;
-        BufferedImage image3;
-        BufferedImage image4;
-        BufferedImage image5;
-        BufferedImage image6;
-        BufferedImage image7;
-        BufferedImage combinedImage3;
-        BufferedImage combinedImage4;
-        BufferedImage image8;
+        frame.setLayout(new GridLayout(3, 1));
 
-        statusLabel.setFont(new Font("Arial", Font.PLAIN, 24));
-        
-        
-        try {
-            image1 = ImageIO.read(getClass().getClassLoader().getResource(cards.toImage(
-                hand.get(0))));
-            image2 = ImageIO.read(getClass().getClassLoader().getResource(cards.toImage(
-                hand.get(1))));
+        JPanel infoPanel = new JPanel();
+        infoPanel.add(new JLabel("Your money: €" + playerMoney));
+        infoPanel.add(new JLabel("Pot: €" + potMoney));
+        infoPanel.add(statusLabel);
+        frame.add(infoPanel);
 
-            Image scaled1 = image1.getScaledInstance(100, 150, Image.SCALE_SMOOTH);
-            Image scaled2 = image2.getScaledInstance(100, 150, Image.SCALE_SMOOTH);
+        JPanel cardPanel = new JPanel();
+        for (int i = 0; i < 2; i++) cardPanel.add(new JLabel("Card " + i));
+        frame.add(cardPanel);
 
-            combinedImage = new BufferedImage(200, 150, BufferedImage.TYPE_INT_ARGB);
+        JPanel buttonPanel = new JPanel();
+        JButton check = new JButton("Check");
+        JButton call = new JButton("Call");
+        JButton raise = new JButton("Raise");
+        JButton fold = new JButton("Fold");
 
-            Graphics2D g = combinedImage.createGraphics();
+        buttonPanel.add(check); buttonPanel.add(call);
+        buttonPanel.add(raise); buttonPanel.add(fold);
 
-            g.drawImage(scaled1, 0, 0, null);
-            g.drawImage(scaled2, 100, 0, null);
+        check.addActionListener(e -> { actions.check(); actions.nextTurn(); });
+        call.addActionListener(e -> { actions.call(); actions.nextTurn(); });
+        raise.addActionListener(e -> { actions.raise(50); actions.nextTurn(); });
+        fold.addActionListener(e -> { actions.fold(); actions.nextTurn(); });
 
-            g.dispose();
+        frame.add(buttonPanel);
 
-            image3 = ImageIO.read(getClass().getClassLoader().getResource(cards.toImage(
-                hand.get(hand.size() - 1))));
-            image4 = ImageIO.read(getClass().getClassLoader().getResource(cards.toImage(
-                hand.get(hand.size() - 2))));
-            image5 = ImageIO.read(getClass().getClassLoader().getResource(cards.toImage(
-                hand.get(hand.size() - 3))));
-            image6 = ImageIO.read(getClass().getClassLoader().getResource(cards.toImage(
-                hand.get(hand.size() - 4))));
-            image7 = ImageIO.read(getClass().getClassLoader().getResource(cards.toImage(
-                hand.get(hand.size() - 5))));
-            image8 = ImageIO.read(getClass().getClassLoader().getResource(
-                "playing_cards/Card-Back.png"));
-
-            Image scaled3 = image3.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
-            Image scaled4 = image4.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
-            Image scaled5 = image5.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
-            Image scaled6 = image6.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
-            Image scaled7 = image7.getScaledInstance(50, 75, Image.SCALE_SMOOTH);
-            Image scaled8 = image8.getScaledInstance(200, 150, Image.SCALE_SMOOTH);
-
-            combinedImage2 = new BufferedImage(150, 75, BufferedImage.TYPE_INT_ARGB);
-            combinedImage3 = new BufferedImage(200, 75, BufferedImage.TYPE_INT_ARGB);
-            combinedImage4 = new BufferedImage(250, 75, BufferedImage.TYPE_INT_ARGB);
-
-            Graphics2D g2 = combinedImage2.createGraphics();
-            Graphics2D g3 = combinedImage3.createGraphics();
-            Graphics2D g4 = combinedImage4.createGraphics();
-
-            g2.drawImage(scaled3, 0, 0, null);
-            g2.drawImage(scaled4, 50, 0, null);
-            g2.drawImage(scaled5, 100, 0, null);
-
-            g2.dispose();
-
-            g3.drawImage(scaled3, 0, 0, null);
-            g3.drawImage(scaled4, 50, 0, null);
-            g3.drawImage(scaled5, 100, 0, null);
-            g3.drawImage(scaled6, 150, 0, null);
-
-            g3.dispose();
-
-            g4.drawImage(scaled3, 0, 0, null);
-            g4.drawImage(scaled4, 50, 0, null);
-            g4.drawImage(scaled5, 100, 0, null);
-            g4.drawImage(scaled6, 150, 0, null);
-            g4.drawImage(scaled7, 200, 0, null);
-
-            g4.dispose();
-
-            for (int i = 0; i < 2; i++) {
-                //JLabel filler = new JLabel();
-                //frame.add(filler);
-                frame.add(new JLabel(Integer.toString(i)));
-            }
-
-            JLabel opponentCards = new JLabel();
-            frame.add(opponentCards);
-            opponentCards.setIcon(new ImageIcon(scaled8));
-
-            JLabel theirMoney = new JLabel("their money: €" + Integer.toString(opponentMoney));
-            theirMoney.setFont(new Font("Arial", Font.PLAIN, 30));
-            frame.add(theirMoney);
-
-            for (int i = 4; i < 11; i++) {
-                //JLabel filler = new JLabel();
-                //frame.add(filler);
-                frame.add(new JLabel(Integer.toString(i)));
-            }
-
-            JLabel pot = new JLabel("pot: €" + Integer.toString(potMoney));
-            pot.setFont(new Font("Arial", Font.PLAIN, 50));
-            frame.add(pot);
-            switch (round) {
-                case 0 -> {
-                    JLabel filler = new JLabel();
-                    frame.add(filler);
-                }
-                case 1 -> {
-                    JLabel river = new JLabel();
-                    frame.add(river);
-                    river.setIcon(new ImageIcon(combinedImage2));
-                }
-                case 2 -> {
-                    JLabel river = new JLabel();
-                    frame.add(river);
-                    river.setIcon(new ImageIcon(combinedImage3));
-                }
-                case 3 -> {
-                    JLabel river = new JLabel();
-                    frame.add(river);
-                    river.setIcon(new ImageIcon(combinedImage4));
-                }
-            }
-            // if (round == 1) {
-            //     JLabel river = new JLabel();
-            //     frame.add(river);
-            //     river.setIcon(new ImageIcon(combinedImage2));
-            // } else if (round == 2) {
-            //     JLabel river = new JLabel();
-            //     frame.add(river);
-            //     river.setIcon(new ImageIcon(combinedImage3));
-            // } else if (round == 3) {
-            //     JLabel river = new JLabel();
-            //     frame.add(river);
-            //     river.setIcon(new ImageIcon(combinedImage4));
-            // } else {
-            //     JLabel filler = new JLabel();
-            //     frame.add(filler);
-            // }
-           
-            frame.add(new JLabel("13"));
-            frame.add(statusLabel);
-            
-            for (int i = 15; i < 17; i++) {
-                //JLabel filler2 = new JLabel();
-                //frame.add(filler2);
-                frame.add(new JLabel(Integer.toString(i)));
-            }   
-
-            JLabel label = new JLabel();
-            frame.add(label);
-            label.setIcon(new ImageIcon(combinedImage));
-
-            //for(int i = 18; i < 19; i++){
-            // JLabel filler3 = new JLabel();
-            // frame.add(filler3);
-            // frame.add(new JLabel(Integer.toString(i)));
-            //}
-
-            JLabel sliderFrame = new JLabel();
-            frame.add(sliderFrame);
-
-            JSlider slider = new JSlider(0, playerMoney);
-            slider.setPaintTrack(true);
-            slider.setPaintTicks(true);
-            slider.setPaintLabels(true);
-            if (playerMoney < 500) {
-                slider.setMajorTickSpacing(100);
-                slider.setMinorTickSpacing(20);
-            } else if (playerMoney < 1000) {
-                slider.setMajorTickSpacing(200);
-                slider.setMinorTickSpacing(50);
-            } else if (playerMoney < 5000) {
-                slider.setMajorTickSpacing(500);
-                slider.setMinorTickSpacing(100);
-            } else {
-                slider.setMajorTickSpacing(1000);
-                slider.setMinorTickSpacing(200);
-            }
-            sliderFrame.setText("your bet = " + slider.getValue());
-            frame.add(slider);
-            slider.addChangeListener((ChangeEvent e) -> {
-                JSlider source = (JSlider) e.getSource();
-                if (!source.getValueIsAdjusting()) {
-                    int value = (int) source.getValue();
-                    sliderFrame.setText("your bet = " + value);
-                }
-            });
-
-            JButton check = new JButton("Check");
-            JButton call = new JButton("Call");
-            JButton raise = new JButton("Raise");
-            JButton fold = new JButton("Fold");
-            
-
-            if (!buttonsEnabled) {
-                check.setEnabled(false);
-                call.setEnabled(false);
-                raise.setEnabled(false);
-                fold.setEnabled(false);
-            } else {
-                check.setEnabled(true);
-                call.setEnabled(true);
-                raise.setEnabled(true);
-                fold.setEnabled(true);
-            }
-
-            frame.add(check);
-            frame.add(call);
-            frame.add(raise);
-            frame.add(fold);
-
-            check.addActionListener(new ActionListener() {
-                @Override 
-                public void actionPerformed(ActionEvent e) {
-                    actions.check();
-                    actions.nextTurn();
-                }
-            });
-            call.addActionListener(new ActionListener() {
-                @Override 
-                public void actionPerformed(ActionEvent e) {
-                    actions.call();
-                    actions.nextTurn();
-                }
-            });
-            raise.addActionListener(new ActionListener() {
-                @Override 
-                public void actionPerformed(ActionEvent e) {
-                    actions.raise(slider.getValue());
-                    actions.nextTurn();
-                }
-            });
-            fold.addActionListener(new ActionListener() {
-                @Override 
-                public void actionPerformed(ActionEvent e) {
-                    actions.fold();
-                    actions.nextTurn();
-                }
-            });
-            JLabel moneyLabel = new JLabel("your money: €" + Integer.toString(playerMoney));
-            moneyLabel.setFont(new Font("Arial", Font.PLAIN, 30));
-            frame.add(moneyLabel);
-
-        } catch (IOException e) {
-            System.out.println("something went wrong");
-        }
-        frame.setSize(1500, 900);
+        frame.setSize(800, 600);
         frame.setVisible(true);
     }
 
-    public void setStatusText(String text) {
-        statusLabel.setText(text);
-    }
-
-    // public static void main(String[] args) {
-    //     new JavaSwing().run();
-    // }
+    public void setStatusText(String text) { statusLabel.setText(text); }
 }

@@ -1,11 +1,11 @@
+
 public class Actions {
-    private Client client;
     private JavaSwing swing;
     private TurnManager turnManager;
     private Bot bot;
+    public boolean playerCalled = false;
 
-    public Actions(Client client, JavaSwing swing, Bot bot) {
-        this.client = client;
+    public Actions(JavaSwing swing, Bot bot) {
         this.swing = swing;
         this.bot = bot;
     }
@@ -15,30 +15,32 @@ public class Actions {
     }
 
     public void call() {
-        System.out.println("Player called.");
-        swing.potMoney += 50;
-        swing.playerMoney -= 50;
+        int toCall = turnManager.raise;
+        swing.potMoney += toCall;
+        swing.playerMoney -= toCall;
+        playerCalled = true;
+        swing.setStatusText("Player called");
     }
 
     public void check() {
-        System.out.println("Player checked.");
+        playerCalled = false;
+        swing.setStatusText("Player checked");
     }
 
-    public void raise(int raise) {
-        System.out.println("Player raised: " + raise);
-        swing.playerMoney -= raise;
-        swing.potMoney += raise;
-        bot.raise(raise);
+    public void raise(int amount) {
+        swing.potMoney += amount;
+        swing.playerMoney -= amount;
+        bot.raise(amount);
+        playerCalled = false;
+        turnManager.playerDidAction();
+        swing.setStatusText("Player raised: €" + amount);
     }
 
     public void fold() {
-        swing.setStatusText("Player folded.");
+        playerCalled = false;
+        swing.setStatusText("Player folded");
         turnManager.playerFolded();
     }
 
-    public void nextTurn() {
-        if (turnManager != null) {
-            turnManager.playerDidAction();
-        }
-    }
+    public void nextTurn() { turnManager.playerDidAction(); }
 }
